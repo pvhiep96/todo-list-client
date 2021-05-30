@@ -67,12 +67,10 @@ export default {
           password: this.password
         }
       })
-      .then(function (response) {
-        console.log(response);
+      .then(function () {
         self.$router.push('/login')
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch(function () {
       });
     }
   },

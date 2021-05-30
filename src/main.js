@@ -31,8 +31,8 @@ Vue.use(Quasar, {
 })
 
 Vue.config.productionTip = false
-Vue.prototype.$auth = withAuth
-Vue.prototype.$axios = withoutAuth
+Vue.prototype.$withAuth = withAuth
+Vue.prototype.$withoutAuth = withoutAuth
 new Vue({
   router,
   render: h => h(App)

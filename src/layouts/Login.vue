@@ -52,8 +52,7 @@ export default {
   methods: {
     login: function () {
       let self = this;
-      console.log(this)
-      this.$axios.post('/auth/login', {email: this.email, password: this.password}).then((response) => {
+      this.$withoutAuth.post('/auth/login', {email: this.email, password: this.password}).then((response) => {
         window.localStorage.setItem('token', response.data.token);
         self.$router.push('/')
       })
