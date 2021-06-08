@@ -5,21 +5,26 @@
         class="window-height window-width row justify-center items-center"
         style="background: linear-gradient(#8274C5, #5A4A9F);"
       >
-        <!-- Login -->
+        <!-- Registration -->
         <div class="column q-pa-lg">
           <div class="row">
             <q-card square class="shadow-24" style="width:300px;height:535px;">
               <q-card-section class="bg-deep-purple-7">
-                <h4 class="text-h5 text-white q-my-md">Company &amp; Co</h4>
+                <h4 class="text-h5 text-white q-my-md">Registration</h4>
               </q-card-section>
               <q-card-section>
-                <q-form class="q-px-sm q-pt-xl">
-                  <q-input square clearable v-model="email" type="email" label="Email">
+                <q-form class="q-px-sm q-pt-xl q-pb-lg">
+                  <q-input square clearable v-model="email" type="email" label="Email" :rules="[]">
                     <template v-slot:prepend>
                       <q-icon name="email" />
                     </template>
                   </q-input>
-                  <q-input square clearable v-model="password" type="password" label="Password">
+                  <q-input square clearable v-model="username" type="username" label="Username" :rules="[val => requiredValue(val), val => maxLength(val)]">
+                    <template v-slot:prepend>
+                      <q-icon name="person" />
+                    </template>
+                  </q-input>
+                  <q-input square clearable v-model="password" type="password" label="Password" :rules="[val => !!val || 'Password is required']">
                     <template v-slot:prepend>
                       <q-icon name="lock" />
                     </template>
@@ -27,10 +32,10 @@
                 </q-form>
               </q-card-section>
               <q-card-actions class="q-px-lg">
-                <q-btn v-on:click="login()" clunelevated size="lg" color="purple-4" class="full-width text-white" label="Sign In" />
+                <q-btn v-on:click="createUser()" size="lg" color="purple-4" class="full-width text-white" label="Get Started" />
               </q-card-actions>
               <q-card-section class="text-center q-pa-sm">
-                <p class="text-grey-6">Forgot your password?</p>
+                <p class="text-grey-6">Return to login</p>
               </q-card-section>
             </q-card>
           </div>
@@ -41,6 +46,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
@@ -50,12 +56,22 @@ export default {
     }
   },
   methods: {
-    login: function () {
+    createUser: function () {
       let self = this;
-      this.$withoutAuth.post('/auth/login', {email: this.email, password: this.password}).then((response) => {
-        window.localStorage.setItem('token', response.data.token);
-        self.$router.push('/')
+      axios({
+        method: 'post',
+        url: 'http://localhost:3000/users',
+        data: {
+          email: this.email,
+          name: this.name,
+          password: this.password
+        }
       })
+      .then(function () {
+        self.$router.push('/login')
+      })
+      .catch(function () {
+      });
     }
   },
 }
