@@ -28,6 +28,14 @@
             </q-item>
             <q-separator :key="'sep' + index"  v-if="menuItem.separator"></q-separator>
           </template>
+          <q-item key="logout" v-on:click="logout()" clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="lock"></q-icon>
+            </q-item-section>
+            <q-item-section>
+              Logout
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -52,7 +60,7 @@
       label: 'Outbox',
       route: '/about',
       separator: false
-    },
+    }
   ]
 
   export default {
@@ -65,6 +73,10 @@
     methods: {
       activedMenu: function (currentRoute) {
         return this.$route.fullPath.includes(currentRoute)
+      },
+      logout: function(){
+        window.localStorage.removeItem('token');
+        window.location.reload()
       }
     },
   }

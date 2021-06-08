@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import {withAuth, withoutAuth} from './backend/axios'
 import './quasar'
 import {
   Quasar,
@@ -30,7 +31,8 @@ Vue.use(Quasar, {
 })
 
 Vue.config.productionTip = false
-
+Vue.prototype.$auth = withAuth
+Vue.prototype.$axios = withoutAuth
 new Vue({
   router,
   render: h => h(App)
