@@ -56,7 +56,7 @@ export default {
         window.localStorage.setItem('token', response.data.token);
         self.$router.push('/')
       })
-    }
+    },
   },
 }
 </script>

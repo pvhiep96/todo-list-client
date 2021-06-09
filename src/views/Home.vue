@@ -21,7 +21,7 @@
           </q-item>
         <Container @drop="onDrop">
             <Draggable v-for="todo of todos" :key="todo.id">
-              <q-item>
+              <q-item v-bind:class="{ completed: todo.is_completed }">
                 <q-item-section top class="col-2 gt-sm">
                   <q-item-label class="q-mt-sm">{{todo.content}}</q-item-label>
                 </q-item-section>
@@ -34,7 +34,7 @@
                   <q-item-label class="q-mt-sm">{{format_date(todo.deadline)}}</q-item-label>
                 </q-item-section>
 
-                <q-item-section top side>
+                <q-item-section v-bind:class="{ hide: todo.is_completed }" top side>
                   <div class="text-grey-8 q-gutter-xs">
                     <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="openModalConfirmDelete(todo)"></q-btn>
                     <q-btn class="gt-xs" size="12px" flat dense round icon="done" @click="missionCompleted(todo)"></q-btn>
@@ -100,6 +100,12 @@
   .todo-list {
     width: 100%;
   }
+  .completed {
+    background-color: var(--q-color-primary);;
+  }
+  .hide {
+    display: none
+  }
 </style>
 
 <script>
@@ -116,7 +122,6 @@
         deleteTodoModal: false,
         editTodoModal: false,
         todos: [],
-        todos_completed: [],
         specifyTodo: null,
         maxLength: 0,
         page: 1,
@@ -129,11 +134,9 @@
     props: ['todoData'],
 
     created() {
-      console.log(this.todos_completed)
       this.$withAuth.get('/todos')
       .then(response => {
         this.todos = response.data['todos']
-        this.todos_completed = response.data['todos_completed']
         this.totalPages = response.data['total_pages']
       })
     },
@@ -143,7 +146,6 @@
       },
 
       updateTodoList(e) {
-        // this.todos[this.todos.indexOf(e.oldData)] = Object.assign({}, this.todos[this.todos.indexOf(e.oldData)], e.newData)
         const index = this.todos.indexOf(e.oldData)
         this.$set(this.todos, index, e.newData)
       },
@@ -178,8 +180,8 @@
       missionCompleted(todo) {
         let self = this
         this.$withAuth.put(`/mission_completed/${todo.id}`).then((response) => {
-          self.todos.splice(self.todos.indexOf(todo), 1);
-          self.todos_completed.push(response)
+          const index = self.todos.indexOf(todo)
+          self.$set(self.todos, index, response.data)
         })
       },
 
