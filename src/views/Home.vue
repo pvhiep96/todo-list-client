@@ -1,49 +1,50 @@
 <template>
   <layout-default>
     <div class="home">
+      
       <q-list bordered class="rounded-borders todo-list">
-        <q-item-label header>Todos <q-btn label="New Todo" color="primary" @click="newTodoModal = true"></q-btn></q-item-label>
-          <q-item>
+      <todo-modal @add-todos="addTodoList"></todo-modal>
+      <q-item>
+        <q-item-section top class="col-2 gt-sm">
+          <q-item-label class="q-mt-sm"><b>Content</b></q-item-label>
+        </q-item-section>
+
+        <q-item-section top>
+          <q-item-label class="q-mt-sm"><b>Description</b></q-item-label>
+        </q-item-section>
+
+        <q-item-section top>
+          <q-item-label class="q-mt-sm"><b>Deadline</b></q-item-label>
+        </q-item-section>
+
+        <q-item-section top side>
+        </q-item-section>
+      </q-item>
+      <Container @drop="onDrop">
+        <Draggable v-for="todo of todos" :todoEdit="todoEdit" :key="todo.id">
+          <q-item v-bind:class="{ completed: todo.is_completed }">
             <q-item-section top class="col-2 gt-sm">
-              <q-item-label class="q-mt-sm"><b>Content</b></q-item-label>
+              <q-item-label class="q-mt-sm">{{todo.content}}</q-item-label>
             </q-item-section>
 
             <q-item-section top>
-              <q-item-label class="q-mt-sm"><b>Description</b></q-item-label>
+              <q-item-label class="q-mt-sm">{{todo.description}}</q-item-label>
             </q-item-section>
 
             <q-item-section top>
-              <q-item-label class="q-mt-sm"><b>Deadline</b></q-item-label>
+              <q-item-label class="q-mt-sm">{{format_date(todo.deadline)}}</q-item-label>
             </q-item-section>
 
-            <q-item-section top side>
+            <q-item-section v-bind:class="{ hide: todo.is_completed }" top side>
+              <div class="text-grey-8 q-gutter-xs">
+                <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="openModalConfirmDelete(todo)"></q-btn>
+                <q-btn class="gt-xs" size="12px" flat dense round icon="done" @click="missionCompleted(todo)"></q-btn>
+                <q-btn size="12px" flat dense round icon="more_vert" @click="openModalEditModal(todo)"></q-btn>
+              </div>
             </q-item-section>
           </q-item>
-        <Container @drop="onDrop">
-            <Draggable v-for="todo of todos" :key="todo.id">
-              <q-item v-bind:class="{ completed: todo.is_completed }">
-                <q-item-section top class="col-2 gt-sm">
-                  <q-item-label class="q-mt-sm">{{todo.content}}</q-item-label>
-                </q-item-section>
-
-                <q-item-section top>
-                  <q-item-label class="q-mt-sm">{{todo.description}}</q-item-label>
-                </q-item-section>
-
-                <q-item-section top>
-                  <q-item-label class="q-mt-sm">{{format_date(todo.deadline)}}</q-item-label>
-                </q-item-section>
-
-                <q-item-section v-bind:class="{ hide: todo.is_completed }" top side>
-                  <div class="text-grey-8 q-gutter-xs">
-                    <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="openModalConfirmDelete(todo)"></q-btn>
-                    <q-btn class="gt-xs" size="12px" flat dense round icon="done" @click="missionCompleted(todo)"></q-btn>
-                    <q-btn size="12px" flat dense round icon="more_vert" @click="openModalEditModal(todo)"></q-btn>
-                  </div>
-                </q-item-section>
-              </q-item>
-            </Draggable>
-          </Container>
+        </Draggable>
+      </Container>
       </q-list>
       <div class="q-pa-lg flex flex-center">
         <q-pagination
@@ -55,16 +56,6 @@
           boundary-numbers
         ></q-pagination>
       </div>
-      <q-dialog v-model="newTodoModal">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">Add new to do</div>
-          </q-card-section>
-          <q-card-section class="q-pt-none">
-            <add-todo @add-todos="addTodoList"></add-todo>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
       <q-dialog v-model="deleteTodoModal">
         <q-card>
           <q-card-section>
@@ -91,7 +82,7 @@
             <edit-todo :todoData="specifyTodo" @update-todos="updateTodoList"></edit-todo>
           </q-card-section>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
     </div>
   </layout-default>
 </template>
@@ -111,14 +102,15 @@
 <script>
   import LayoutDefault from '../layouts/LayoutDefault.vue'
   import { Container, Draggable } from "vue-smooth-dnd";
-  import AddTodo from '../components/AddTodo.vue'
+  // import AddTodo from '../components/AddTodo.vue'
   import EditTodo from '../components/EditTodo.vue'
+  import TodoModal from '../components/NewTodoModal.vue'
   import moment from 'moment';
 
   export default {
     data() {
       return {
-        newTodoModal: false,
+        // newTodoModal: false,
         deleteTodoModal: false,
         editTodoModal: false,
         todos: [],
@@ -130,8 +122,7 @@
         totalPages: 0
       }
     },
-
-    props: ['todoData'],
+    props: ['todoData', 'todoEdit'],
 
     created() {
       this.$withAuth.get('/todos')
@@ -195,10 +186,10 @@
     },
     components: {
       LayoutDefault,
-      AddTodo,
       EditTodo,
       Container,
-      Draggable
+      Draggable,
+      TodoModal
     }
   }
   export const applyDrag = (arr, dragResult) => {
