@@ -1,10 +1,16 @@
 <template>
   <div>
-    <q-item-label header>Todos <q-btn label="New Todo" color="primary" @click="newTodoModal = true"></q-btn></q-item-label>
+    <q-item-label header>Todos <q-btn label="New Todo" color="primary" @click="openTodoModal()"></q-btn></q-item-label>
     <q-dialog v-model="newTodoModal">
       <q-card>
         <q-card-section>
           <div class="text-h6">Add new to do</div>
+          <p v-if="errors.length">
+            <b>Please correct the following error(s):</b>
+            <ul>
+              <li :key="error" v-for="error in errors">{{ error }}</li>
+            </ul>
+          </p>
         </q-card-section>
         <q-card-section class="q-pt-none">
           <div id='todo'>
@@ -31,7 +37,8 @@
         content: '',
         description: '',
         date: '',
-        time: ''
+        time: '',
+        errors: []
       }
     },
     beforeUpdate() {
@@ -41,12 +48,21 @@
       console.log(`update: ${this}`)
     },
     methods: {
-      createTodo: function () {
-        let self = this
-        let deadline = this.date.toString() + ' ' + this.time.toString()
-        this.$withAuth.post('/todos', {content: this.content, description: this.description, deadline: deadline}).then((response) => {
-          self.$emit('add-todos', response.data)
-        })
+      createTodo: function (e) {
+        if (this.content === '') {
+          this.errors.push('Điền nội dung mày làm vào đi!');
+          e.preventDefault();
+        } else {
+          let self = this
+          let deadline = this.date.toString() + ' ' + this.time.toString()
+          this.$withAuth.post('/todos', {content: this.content, description: this.description, deadline: deadline}).then((response) => {
+            self.$emit('add-todos', response.data)
+          })
+        }
+      },
+      openTodoModal: function () {
+        this.newTodoModal = true
+        this.errors = []
       }
     }
   }

@@ -82,7 +82,7 @@
             <edit-todo :todoData="specifyTodo" @update-todos="updateTodoList"></edit-todo>
           </q-card-section>
         </q-card>
-      </q-dialog> -->
+      </q-dialog>
     </div>
   </layout-default>
 </template>
