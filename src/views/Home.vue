@@ -1,7 +1,6 @@
 <template>
   <layout-default>
     <div class="home">
-      
       <q-list bordered class="rounded-borders todo-list">
       <todo-modal @add-todos="addTodoList"></todo-modal>
       <q-item>
@@ -21,7 +20,7 @@
         </q-item-section>
       </q-item>
       <Container @drop="onDrop">
-        <Draggable v-for="todo of todos" :todoEdit="todoEdit" :key="todo.id">
+        <Draggable v-for="todo of todos" :key="todo.id">
           <q-item v-bind:class="{ completed: todo.is_completed }">
             <q-item-section top class="col-2 gt-sm">
               <q-item-label class="q-mt-sm">{{todo.content}}</q-item-label>
@@ -73,16 +72,7 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="editTodoModal">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">Edit Todo</div>
-          </q-card-section>
-          <q-card-section class="q-pt-none">
-            <edit-todo :todoData="specifyTodo" @update-todos="updateTodoList"></edit-todo>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+      <edit-todo-modal :isOpen="openEditTodoModal" :todoData="specifyTodo" @update-todos="updateTodoList"></edit-todo-modal>
     </div>
   </layout-default>
 </template>
@@ -102,19 +92,18 @@
 <script>
   import LayoutDefault from '../layouts/LayoutDefault.vue'
   import { Container, Draggable } from "vue-smooth-dnd";
-  // import AddTodo from '../components/AddTodo.vue'
-  import EditTodo from '../components/EditTodo.vue'
   import TodoModal from '../components/NewTodoModal.vue'
+  import EditTodoModal from '../components/EditTodoModal.vue'
   import moment from 'moment';
 
   export default {
     data() {
       return {
-        // newTodoModal: false,
         deleteTodoModal: false,
         editTodoModal: false,
+        openEditTodoModal: false,
         todos: [],
-        specifyTodo: null,
+        specifyTodo: {},
         maxLength: 0,
         page: 1,
         currentPage:1,
@@ -122,8 +111,10 @@
         totalPages: 0
       }
     },
-    props: ['todoData', 'todoEdit'],
 
+    updated() {
+      console.log('rerender')
+    },
     created() {
       this.$withAuth.get('/todos')
       .then(response => {
@@ -137,8 +128,10 @@
       },
 
       updateTodoList(e) {
-        const index = this.todos.indexOf(e.oldData)
+        console.log(e)
+        const index = this.todos.indexOf(e.newData)
         this.$set(this.todos, index, e.newData)
+        this.openEditTodoModal = false
       },
 
       onDrop(dropResult) {
@@ -157,7 +150,7 @@
       },
 
       openModalEditModal(todo){
-        this.editTodoModal = true
+        this.openEditTodoModal = true
         this.specifyTodo = todo
       },
 
@@ -186,10 +179,11 @@
     },
     components: {
       LayoutDefault,
-      EditTodo,
+      // EditTodo,
       Container,
       Draggable,
-      TodoModal
+      TodoModal,
+      EditTodoModal
     }
   }
   export const applyDrag = (arr, dragResult) => {

@@ -41,12 +41,6 @@
         errors: []
       }
     },
-    beforeUpdate() {
-      console.log(`beforeUpdate: ${this}`)
-    },
-    updated() {
-      console.log(`update: ${this}`)
-    },
     methods: {
       createTodo: function (e) {
         if (this.content === '') {
