@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import {withAuth, withoutAuth} from './backend/axios'
 import './quasar'
+import store from './store/index'
 import {
   Quasar,
   QLayout,
@@ -35,5 +36,6 @@ Vue.prototype.$withAuth = withAuth
 Vue.prototype.$withoutAuth = withoutAuth
 new Vue({
   router,
-  render: h => h(App)
+  render: h => h(App),
+  store
 }).$mount('#app')

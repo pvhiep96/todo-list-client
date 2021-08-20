@@ -100,8 +100,9 @@
 </style>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
   import LayoutDefault from '../layouts/LayoutDefault.vue'
-  import { Container, Draggable } from "vue-smooth-dnd";
+  import { Container, Draggable } from "vue-smooth-dnd"
   // import AddTodo from '../components/AddTodo.vue'
   import EditTodo from '../components/EditTodo.vue'
   import TodoModal from '../components/NewTodoModal.vue'
@@ -113,7 +114,6 @@
         // newTodoModal: false,
         deleteTodoModal: false,
         editTodoModal: false,
-        todos: [],
         specifyTodo: null,
         maxLength: 0,
         page: 1,
@@ -125,13 +125,13 @@
     props: ['todoData', 'todoEdit'],
 
     created() {
-      this.$withAuth.get('/todos')
-      .then(response => {
-        this.todos = response.data['todos']
-        this.totalPages = response.data['total_pages']
-      })
+      this.getTodos()
+    },
+    computed: {
+      ...mapState(['todos']),
     },
     methods: {
+      ...mapActions(['getTodos']),
       addTodoList(e) {
         this.todos.push(e);
       },
